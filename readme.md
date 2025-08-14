@@ -33,8 +33,8 @@ Dibangun dengan **Node.js**, **Express**, **Prisma ORM**, **EJS**, dan **SQLite*
 
 ### 1️⃣ Clone repository
 ```bash
-git clone https://github.com/muh-dirga-f/koperasi-mp-bojo
-cd koperasi-mp-bojo
+git clone https://github.com/muh-dirga-f/kopdes-mp-bojo
+cd kopdes-mp-bojo
 ````
 
 ### 2️⃣ Install dependencies
