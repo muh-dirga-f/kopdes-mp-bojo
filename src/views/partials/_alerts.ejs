@@ -1,0 +1,36 @@
+<% if (typeof err !== 'undefined' && err) { %>
+  <div class="container-fluid pt-2">
+    <div class="alert alert-danger alert-dismissible fade show" role="alert" data-autoclose="true">
+      <%= err %>
+      <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+        <span aria-hidden="true">&times;</span>
+      </button>
+    </div>
+  </div>
+<% } %>
+
+<% if (typeof msg !== 'undefined' && msg) { %>
+  <div class="container-fluid pt-2">
+    <div class="alert alert-success alert-dismissible fade show" role="alert" data-autoclose="true">
+      <%= msg %>
+      <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+        <span aria-hidden="true">&times;</span>
+      </button>
+    </div>
+  </div>
+<% } %>
+
+<script>
+// auto-dismiss setelah 5 detik (Bootstrap 4)
+(function(){
+  var alerts = document.querySelectorAll('.alert[data-autoclose="true"]');
+  if (!alerts || !alerts.length) return;
+  setTimeout(function(){
+    alerts.forEach(function(a){
+      // panggil API alert Bootstrap 4
+      if (typeof $ !== 'undefined' && $(a).alert) { $(a).alert('close'); }
+      else { a.parentNode && a.parentNode.removeChild(a); }
+    });
+  }, 5000);
+})();
+</script>

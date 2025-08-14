@@ -1,0 +1,176 @@
+<div class="container-fluid">
+  <div class="d-sm-flex align-items-center justify-content-between mb-4">
+    <h1 class="h3 mb-0 text-gray-800">Users</h1>
+    <button class="btn btn-primary" data-toggle="modal" data-target="#modalAdd">
+      <i class="fas fa-user-plus"></i> Tambah
+    </button>
+  </div>
+
+  <% if (err) { %><div class="alert alert-danger"><%= err %></div><% } %>
+  <% if (msg) { %><div class="alert alert-success"><%= msg %></div><% } %>
+
+  <div class="card shadow">
+    <div class="card-body">
+      <div class="table-responsive">
+        <table id="tblUsers" class="table table-striped table-bordered" style="width:100%">
+          <thead>
+            <tr>
+              <th>Nama</th>
+              <th>Email</th>
+              <th>Role</th>
+              <th>Status</th>
+              <th style="width:220px;">Aksi</th>
+            </tr>
+          </thead>
+          <tbody>
+            <% users.forEach(u=> { %>
+              <tr>
+                <td><%= u.fullName %></td>
+                <td><%= u.email %></td>
+                <td><span class="badge badge-<%= u.role.name==='ADMIN'?'danger':'secondary' %>"><%= u.role.name %></span></td>
+                <td>
+                  <% if (u.isActive) { %>
+                    <span class="badge badge-success">Aktif</span>
+                  <% } else { %>
+                    <span class="badge badge-secondary">Nonaktif</span>
+                  <% } %>
+                </td>
+                <td>
+                  <button class="btn btn-sm btn-info btn-edit" data-toggle="modal" data-target="#modalEdit"
+                          data-id="<%= u.id %>"
+                          data-name="<%- u.fullName.replace(/"/g,'&quot;') %>"
+                          data-email="<%- u.email.replace(/"/g,'&quot;') %>"
+                          data-roleid="<%= u.roleId %>">
+                    <i class="fas fa-edit"></i> Edit
+                  </button>
+
+                  <button class="btn btn-sm btn-warning btn-reset" data-toggle="modal" data-target="#modalReset"
+                          data-id="<%= u.id %>" data-name="<%- u.fullName.replace(/"/g,'&quot;') %>">
+                    <i class="fas fa-key"></i> Reset
+                  </button>
+
+                  <% if (u.isActive) { %>
+                    <form method="post" action="/users/<%= u.id %>/deactivate" class="d-inline"
+                          onsubmit="return confirm('Nonaktifkan user ini?')">
+                      <button class="btn btn-sm btn-danger" <%= (user.id===u.id)?'disabled':'' %>>
+                        <i class="fas fa-user-slash"></i>
+                      </button>
+                    </form>
+                  <% } else { %>
+                    <form method="post" action="/users/<%= u.id %>/activate" class="d-inline"
+                          onsubmit="return confirm('Aktifkan kembali user ini?')">
+                      <button class="btn btn-sm btn-success">
+                        <i class="fas fa-user-check"></i>
+                      </button>
+                    </form>
+                  <% } %>
+                </td>
+              </tr>
+            <% }) %>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Modal Tambah -->
+<div class="modal fade" id="modalAdd" tabindex="-1">
+  <div class="modal-dialog">
+    <form class="modal-content" method="post" action="/users">
+      <div class="modal-header">
+        <h5 class="modal-title">Tambah User</h5>
+        <button type="button" class="close" data-dismiss="modal"><span>&times;</span></button>
+      </div>
+      <div class="modal-body">
+        <div class="form-group"><label>Nama Lengkap</label><input name="fullName" class="form-control" required></div>
+        <div class="form-group"><label>Email</label><input name="email" type="email" class="form-control" required></div>
+        <div class="form-group"><label>Password</label><input name="password" type="password" class="form-control" required minlength="6"></div>
+        <div class="form-group">
+          <label>Role</label>
+          <select name="roleId" class="form-control">
+            <% roles.forEach(r=> { %>
+              <option value="<%= r.id %>"><%= r.name %></option>
+            <% }) %>
+          </select>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-primary">Simpan</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<!-- Modal Edit -->
+<div class="modal fade" id="modalEdit" tabindex="-1">
+  <div class="modal-dialog">
+    <form id="formEdit" class="modal-content" method="post">
+      <div class="modal-header">
+        <h5 class="modal-title">Edit User</h5>
+        <button type="button" class="close" data-dismiss="modal"><span>&times;</span></button>
+      </div>
+      <div class="modal-body">
+        <div class="form-group"><label>Nama Lengkap</label><input id="e-fullName" name="fullName" class="form-control" required></div>
+        <div class="form-group"><label>Email</label><input id="e-email" name="email" type="email" class="form-control" required></div>
+        <div class="form-group">
+          <label>Role</label>
+          <select id="e-roleId" name="roleId" class="form-control">
+            <% roles.forEach(r=> { %>
+              <option value="<%= r.id %>"><%= r.name %></option>
+            <% }) %>
+          </select>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-primary">Update</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<!-- Modal Reset Password -->
+<div class="modal fade" id="modalReset" tabindex="-1">
+  <div class="modal-dialog">
+    <form id="formReset" class="modal-content" method="post">
+      <div class="modal-header">
+        <h5 class="modal-title">Reset Password</h5>
+        <button type="button" class="close" data-dismiss="modal"><span>&times;</span></button>
+      </div>
+      <div class="modal-body">
+        <div class="alert alert-warning small">
+          Password akan diganti untuk user: <strong id="reset-name"></strong>
+        </div>
+        <div class="form-group"><label>Password Baru</label>
+          <input id="reset-pass" name="newPassword" type="password" class="form-control" required minlength="6">
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-warning">Reset</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<script>
+  $(function(){
+    $('#tblUsers').DataTable({ pageLength: 10, lengthMenu: [10,25,50,100], order: [[0,'asc']] });
+
+    // Isi modal Edit
+    $(document).on('click', '.btn-edit', function(){
+      const b = $(this);
+      $('#formEdit').attr('action', '/users/' + b.data('id'));
+      $('#e-fullName').val(b.data('name'));
+      $('#e-email').val(b.data('email'));
+      $('#e-roleId').val(b.data('roleid'));
+    });
+
+    // Isi modal Reset
+    $(document).on('click', '.btn-reset', function(){
+      const b = $(this);
+      $('#formReset').attr('action', '/users/' + b.data('id') + '/reset-password');
+      $('#reset-name').text(b.data('name'));
+      $('#reset-pass').val('');
+    });
+  });
+</script>

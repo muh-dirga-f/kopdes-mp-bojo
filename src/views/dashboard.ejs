@@ -1,0 +1,128 @@
+<div class="container-fluid">
+    <div class="d-sm-flex align-items-center justify-content-between mb-4">
+        <h1 class="h3 mb-0 text-gray-800">Dashboard</h1>
+    </div>
+
+    <div class="row">
+        <div class="col-xl-4 col-md-12 mb-4">
+            <div class="card border-left-primary shadow h-100 py-2">
+                <div class="card-body">
+                    <div class="text-xs font-weight-bold text-primary text-uppercase mb-1">Anggota Aktif</div>
+                    <div class="h5 mb-0 font-weight-bold text-gray-800">
+                        <%= cards.anggota %>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-xl-4 col-md-12 mb-4">
+            <div class="card border-left-success shadow h-100 py-2">
+                <div class="card-body">
+                    <div class="text-xs font-weight-bold text-success text-uppercase mb-1">Total Wajib</div>
+                    <div class="h5 mb-0 font-weight-bold text-gray-800">
+                        <%= cards.wajib %>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-xl-4 col-md-12 mb-4">
+            <div class="card border-left-info shadow h-100 py-2">
+                <div class="card-body">
+                    <div class="text-xs font-weight-bold text-info text-uppercase mb-1">Total Pokok</div>
+                    <div class="h5 mb-0 font-weight-bold text-gray-800">
+                        <%= cards.pokok %>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Recent transactions -->
+    <div class="card shadow mb-4">
+        <div class="card-header py-3">
+            <h6 class="m-0 font-weight-bold text-primary">Transaksi Terbaru</h6>
+        </div>
+        <div class="card-body p-0">
+            <div class="table-responsive">
+                <table class="table table-striped mb-0">
+                    <thead>
+                        <tr>
+                            <th>Kode</th>
+                            <th>Anggota</th>
+                            <th>Kategori</th>
+                            <th>Jumlah</th>
+                            <th>Tgl Bayar</th>
+                            <th>Oleh</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <% recentTx.forEach(tx=> { %>
+                            <tr>
+                                <td>
+                                    <%= tx.code %>
+                                </td>
+                                <td>
+                                    <%= tx.member.memberNumber %> - <%= tx.member.fullName %>
+                                </td>
+                                <td>
+                                    <%= tx.category %>
+                                </td>
+                                <td>
+                                    <%= Number(tx.amount).toLocaleString('id-ID', { style:'currency', currency:'IDR',
+                                        minimumFractionDigits:0 }) %>
+                                </td>
+                                <td>
+                                    <%= new Date(tx.paidAt).toLocaleDateString() %>
+                                </td>
+                                <td>
+                                    <%= tx.createdBy.fullName %>
+                                </td>
+                            </tr>
+                            <% }) %>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <!-- Top 10 Anggota -->
+    <div class="card shadow mb-4">
+        <div class="card-header py-3">
+            <h6 class="m-0 font-weight-bold text-primary">Top 10 Anggota (Simpanan Wajib+Pokok)</h6>
+        </div>
+        <div class="card-body p-0">
+            <div class="table-responsive">
+                <table class="table table-striped mb-0">
+                    <thead>
+                        <tr>
+                            <th>Nomor</th>
+                            <th>Nama</th>
+                            <th>Wajib</th>
+                            <th>Pokok</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <% topRows.forEach(r=> { %>
+                            <tr>
+                                <td>
+                                    <%= r.memberNumber %>
+                                </td>
+                                <td>
+                                    <%= r.fullName %>
+                                </td>
+                                <td>
+                                    <%= r.wajib %>
+                                </td>
+                                <td>
+                                    <%= r.pokok %>
+                                </td>
+                            </tr>
+                            <% }) %>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+</div>

@@ -1,0 +1,130 @@
+<div class="container-fluid">
+  <div class="d-sm-flex align-items-center justify-content-between mb-4">
+    <h1 class="h3 mb-0 text-gray-800">Simpanan Pokok</h1>
+    <div class="text-muted small">Daftar anggota aktif beserta saldo pokok</div>
+  </div>
+
+  <div class="card shadow">
+    <div class="card-body">
+      <div class="table-responsive">
+        <table id="tblPokokMembers" class="table table-striped table-bordered" style="width:100%">
+          <thead>
+            <tr>
+              <th>Nomor</th>
+              <th>Nama</th>
+              <th>HP</th>
+              <th>Saldo Pokok</th>
+              <th style="width:140px;">Aksi</th>
+            </tr>
+          </thead>
+          <tbody>
+            <% (rows || []).forEach(r=> { %>
+              <tr>
+                <td><%= r.memberNumber %></td>
+                <td><%= r.fullName %></td>
+                <td><%= r.phone %></td>
+                <td><%= r.pokok %></td>
+                <td>
+                  <% if (!r.hasPokok) { %>
+                    <button class="btn btn-sm btn-primary btn-add"
+                            data-toggle="modal" data-target="#modalAdd"
+                            data-memberid="<%= r.id %>"
+                            data-membername="<%- r.fullName.replace(/"/g,'&quot;') %>"
+                            data-membernumber="<%- r.memberNumber.replace(/"/g,'&quot;') %>">
+                      <i class="fas fa-plus"></i> Tambah
+                    </button>
+                  <% } else { %>
+                    <button class="btn btn-sm btn-secondary" disabled>
+                      <i class="fas fa-check"></i> Sudah Ada
+                    </button>
+                  <% } %>
+                </td>
+              </tr>
+            <% }) %>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Modal Tambah Simpanan Pokok -->
+<div class="modal fade" id="modalAdd" tabindex="-1">
+  <div class="modal-dialog">
+    <form class="modal-content" method="post" action="/transactions">
+      <input type="hidden" name="returnTo" value="/savings/pokok">
+      <div class="modal-header">
+        <h5 class="modal-title">Tambah Simpanan Pokok — <span id="modalMemberTitle"></span></h5>
+        <button type="button" class="close" data-dismiss="modal"><span>&times;</span></button>
+      </div>
+      <div class="modal-body">
+        <input type="hidden" name="category" value="POKOK">
+        <input type="hidden" id="memberId" name="memberId" value="">
+
+        <div class="form-group">
+          <label>Jumlah</label>
+          <input type="text" id="amount" name="amount" class="form-control" value="100000" required>
+        </div>
+        <div class="form-group">
+          <label>Tgl Bayar</label>
+          <input type="date" id="paidAt" name="paidAt" class="form-control" required>
+        </div>
+        <div class="form-group">
+          <label>Metode</label>
+          <select name="paymentMethod" class="form-control">
+            <option value="CASH">CASH</option>
+            <option value="TRANSFER">TRANSFER</option>
+            <option value="OTHER">OTHER</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label>Catatan</label>
+          <textarea name="note" class="form-control" rows="2"></textarea>
+        </div>
+
+        <div class="alert alert-info small mb-0">
+          Simpanan pokok hanya bisa sekali per anggota. Jika sudah pernah, sistem akan menolak.
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-light" data-dismiss="modal">Batal</button>
+        <button class="btn btn-primary">Simpan</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<script>
+  $(function () {
+    // DataTable
+    $('#tblPokokMembers').DataTable({
+      pageLength: 10,
+      lengthMenu: [10,25,50,100],
+      order: [[1,'asc']]
+    });
+
+    // AutoNumeric untuk amount
+    new AutoNumeric('#amount', {
+      digitGroupSeparator: '.',
+      decimalCharacter: ',',
+      decimalPlaces: 0,
+      unformatOnSubmit: true
+    });
+
+    // Isi modal saat klik "Tambah"
+    $(document).on('click', '.btn-add', function(){
+      const id = $(this).data('memberid');
+      const name = $(this).data('membername');
+      const number = $(this).data('membernumber');
+      $('#memberId').val(id);
+      $('#modalMemberTitle').text(number + ' — ' + name);
+
+      // set default tanggal = hari ini
+      const t = new Date();
+      const y = t.getFullYear();
+      const m = String(t.getMonth()+1).padStart(2,'0');
+      const d = String(t.getDate()).padStart(2,'0');
+      $('#paidAt').val(`${y}-${m}-${d}`);
+    });
+  });
+</script>

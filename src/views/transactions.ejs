@@ -1,0 +1,257 @@
+<div class="container-fluid">
+  <div class="d-sm-flex align-items-center justify-content-between mb-4">
+    <h1 class="h3 mb-0 text-gray-800">Daftar Transaksi</h1>
+    <% if (user?.roleName==='ADMIN' ) { %>
+      <form method="post" action="/transactions/refresh-cache"
+        onsubmit="return confirm('Refresh saldo anggota dari transaksi?')">
+        <button class="btn btn-warning"><i class="fas fa-sync-alt"></i> Refresh Cache</button>
+      </form>
+      <% } %>
+  </div>
+
+  <!-- Cards Total -->
+  <div class="row">
+    <div class="col-md-6 mb-3">
+      <div class="card border-left-success shadow h-100 py-2">
+        <div class="card-body">
+          <div class="text-xs font-weight-bold text-success text-uppercase mb-1">Total Wajib</div>
+          <div class="h5 mb-0 font-weight-bold text-gray-800">
+            <%= cards.wajib %>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="col-md-6 mb-3">
+      <div class="card border-left-info shadow h-100 py-2">
+        <div class="card-body">
+          <div class="text-xs font-weight-bold text-info text-uppercase mb-1">Total Pokok</div>
+          <div class="h5 mb-0 font-weight-bold text-gray-800">
+            <%= cards.pokok %>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="card shadow mb-4">
+    <div class="card-header">
+      <ul id="txTabs" class="nav nav-tabs card-header-tabs" role="tablist">
+        <li class="nav-item">
+          <a class="nav-link <%= activeTab==='wajib' ? 'active' : '' %>" id="tab-wajib" data-toggle="tab"
+            href="#pane-wajib" role="tab" data-tab="wajib">Simpanan Wajib</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link <%= activeTab==='pokok' ? 'active' : '' %>" id="tab-pokok" data-toggle="tab"
+            href="#pane-pokok" role="tab" data-tab="pokok">Simpanan Pokok</a>
+        </li>
+      </ul>
+    </div>
+    <div class="card-body tab-content">
+      <div class="tab-pane fade <%= activeTab==='wajib' ? 'show active' : '' %>" id="pane-wajib" role="tabpanel">
+        <div class="table-responsive">
+          <table id="tblWajib" class="table table-striped table-bordered" style="width:100%">
+            <thead>
+              <tr>
+                <th>Kode</th>
+                <th>Anggota</th>
+                <th>Jumlah</th>
+                <th>Tgl Bayar</th>
+                <th>Metode</th>
+                <th>Catatan</th>
+                <th>Oleh</th>
+                <th>Status</th>
+                <th style="width:90px;">Aksi</th>
+              </tr>
+            </thead>
+            <tbody>
+              <% (txWajib || []).forEach(t=> { %>
+                <tr>
+                  <td>
+                    <%= t.code %>
+                  </td>
+                  <td>
+                    <%= t.member.memberNumber %> - <%= t.member.fullName %>
+                  </td>
+                  <td>
+                    <%= t.amountFormatted %>
+                  </td>
+                  <td>
+                    <%= new Date(t.paidAt).toLocaleDateString() %>
+                  </td>
+                  <td>
+                    <%= t.paymentMethod %>
+                  </td>
+                  <td>
+                    <%= t.note || '' %>
+                  </td>
+                  <td>
+                    <%= t.createdBy.fullName %>
+                  </td>
+                  <td>
+                    <% if (t.status==='POSTED' ) { %>
+                      <span class="badge badge-success">POSTED</span>
+                      <% } else { %>
+                        <span class="badge badge-secondary">VOIDED</span>
+                        <% } %>
+                  </td>
+                  <td>
+                    <% if (user?.roleName==='ADMIN' && t.status==='POSTED' ) { %>
+                      <button class="btn btn-sm btn-danger btn-void" data-toggle="modal" data-target="#modalVoid"
+                        data-code="<%= t.code %>">
+                        <i class="fas fa-ban"></i> Void
+                      </button>
+                      <% } else { %>
+                        <button class="btn btn-sm btn-light" disabled>-</button>
+                        <% } %>
+                  </td>
+                </tr>
+                <% }) %>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <div class="tab-pane fade <%= activeTab==='pokok' ? 'show active' : '' %>" id="pane-pokok" role="tabpanel">
+        <div class="table-responsive">
+          <table id="tblPokok" class="table table-striped table-bordered" style="width:100%">
+            <thead>
+              <tr>
+                <th>Kode</th>
+                <th>Anggota</th>
+                <th>Jumlah</th>
+                <th>Tgl Bayar</th>
+                <th>Metode</th>
+                <th>Catatan</th>
+                <th>Oleh</th>
+                <th>Status</th>
+                <th style="width:90px;">Aksi</th>
+              </tr>
+            </thead>
+            <tbody>
+              <% (txPokok || []).forEach(t=> { %>
+                <tr>
+                  <td>
+                    <%= t.code %>
+                  </td>
+                  <td>
+                    <%= t.member.memberNumber %> - <%= t.member.fullName %>
+                  </td>
+                  <td>
+                    <%= t.amountFormatted %>
+                  </td>
+                  <td>
+                    <%= new Date(t.paidAt).toLocaleDateString() %>
+                  </td>
+                  <td>
+                    <%= t.paymentMethod %>
+                  </td>
+                  <td>
+                    <%= t.note || '' %>
+                  </td>
+                  <td>
+                    <%= t.createdBy.fullName %>
+                  </td>
+                  <td>
+                    <% if (t.status==='POSTED' ) { %>
+                      <span class="badge badge-success">POSTED</span>
+                      <% } else { %>
+                        <span class="badge badge-secondary">VOIDED</span>
+                        <% } %>
+                  </td>
+                  <td>
+                    <% if (user?.roleName==='ADMIN' && t.status==='POSTED' ) { %>
+                      <button class="btn btn-sm btn-danger btn-void" data-toggle="modal" data-target="#modalVoid"
+                        data-code="<%= t.code %>">
+                        <i class="fas fa-ban"></i> Void
+                      </button>
+                      <% } else { %>
+                        <button class="btn btn-sm btn-light" disabled>-</button>
+                        <% } %>
+                  </td>
+                </tr>
+                <% }) %>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Modal Void -->
+<div class="modal fade" id="modalVoid" tabindex="-1">
+  <div class="modal-dialog">
+    <form id="formVoid" class="modal-content" method="post">
+      <input type="hidden" name="returnTo" value="">
+      <div class="modal-header">
+        <h5 class="modal-title">Void Transaksi</h5>
+        <button type="button" class="close" data-dismiss="modal"><span>&times;</span></button>
+      </div>
+      <div class="modal-body">
+        <div class="alert alert-warning">Transaksi akan dibatalkan dan saldo anggota akan disesuaikan kembali.</div>
+        <div class="form-group"><label>Alasan Void (opsional)</label>
+          <textarea name="voidReason" class="form-control" rows="3"
+            placeholder="Misal: input ganda, salah nominal, dsb."></textarea>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-light" data-dismiss="modal">Batal</button>
+        <button class="btn btn-danger">Konfirmasi Void</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<script>
+  $(function () {
+    // DataTables per tab
+    var dtWajib = $('#tblWajib').DataTable({
+      pageLength: 10, lengthMenu: [10, 25, 50, 100], order: [[0, 'desc']]
+    });
+    var dtPokok = $('#tblPokok').DataTable({
+      pageLength: 10, lengthMenu: [10, 25, 50, 100], order: [[0, 'desc']]
+    });
+
+    // === util: tab aktif sekarang
+    function getActiveTab() {
+      var el = document.querySelector('#txTabs .nav-link.active');
+      return el ? el.getAttribute('data-tab') : 'wajib';
+    }
+
+    // === set nilai returnTo ke form modal Void
+    function updateReturnTo() {
+      var tab = getActiveTab();
+      var url = '/transactions?tab=' + tab;
+      var inp = document.querySelector('#formVoid input[name="returnTo"]');
+      if (inp) inp.value = url;
+    }
+
+    // Inisialisasi saat load
+    updateReturnTo();
+
+    // Update saat tab berubah (Bootstrap 4 event)
+    $('#txTabs a[data-toggle="tab"]').on('shown.bs.tab', function (e) {
+      var tab = e.target.getAttribute('data-tab');
+
+      // update URL tanpa reload (agar reload halaman tetap buka tab yang sama)
+      if (window.history && window.history.replaceState) {
+        window.history.replaceState(null, '', '/transactions?tab=' + tab);
+      }
+
+      updateReturnTo();
+
+      // perbaiki lebar kolom DataTables di tab yang baru aktif
+      if (tab === 'wajib') { dtWajib.columns.adjust(); }
+      if (tab === 'pokok') { dtPokok.columns.adjust(); }
+    });
+
+    // Set action form modal Void sesuai tombol yang diklik
+    $('#modalVoid').on('show.bs.modal', function (e) {
+      const code = $(e.relatedTarget).data('code');
+      $('#formVoid').attr('action', '/transactions/' + code + '/void');
+
+      // pastikan returnTo terkini (kalau user klik Void segera setelah ganti tab)
+      updateReturnTo();
+    });
+  });
+</script>

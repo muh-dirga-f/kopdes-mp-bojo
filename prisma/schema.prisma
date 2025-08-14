@@ -1,0 +1,123 @@
+// prisma/schema.prisma
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+enum RoleName {
+  ADMIN
+  STAFF
+}
+
+enum TxCategory {
+  WAJIB
+  POKOK
+}
+
+enum TxStatus {
+  POSTED
+  VOIDED
+}
+
+enum PaymentMethod {
+  CASH
+  TRANSFER
+  OTHER
+}
+
+model Role {
+  id        Int       @id @default(autoincrement())
+  name      RoleName  @unique
+  users     User[]
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+}
+
+model User {
+  id                   Int          @id @default(autoincrement())
+  email                String       @unique
+  passwordHash         String
+  fullName             String
+  roleId               Int
+  role                 Role         @relation(fields: [roleId], references: [id], onUpdate: Cascade, onDelete: Restrict)
+  isActive             Boolean      @default(true)
+  sessions             Session[]
+  createdAt            DateTime     @default(now())
+  updatedAt            DateTime     @updatedAt
+
+  createdTransactions  Transaction[] @relation("TxCreatedBy")
+  voidedTransactions   Transaction[] @relation("TxVoidedBy")
+}
+
+model Session {
+  id        String   @id
+  userId    Int
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  data      Bytes
+  expiresAt DateTime
+  createdAt DateTime @default(now())
+
+  @@index([userId])
+  @@index([expiresAt])
+}
+
+model Member {
+  id            Int       @id @default(autoincrement())
+  memberNumber  String    @unique
+  fullName      String
+  phone         String?                 // ← HAPUS @db.VarChar(30)
+  email         String?   @unique
+  address       String?
+  joinDate      DateTime  @default(now())
+  isActive      Boolean   @default(true)
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+
+  transactions  Transaction[]
+  balance       MemberBalance?
+
+  @@index([fullName])
+  @@index([isActive])
+}
+
+model Transaction {
+  id            Int           @id @default(autoincrement())
+  code          String        @unique
+  memberId      Int
+  member        Member        @relation(fields: [memberId], references: [id], onDelete: Restrict)
+  category      TxCategory
+  amount        Decimal                         // ← HAPUS @db.Decimal(18, 2)
+  paidAt        DateTime
+  paymentMethod PaymentMethod @default(CASH)
+  note          String?
+
+  status        TxStatus      @default(POSTED)
+  voidReason    String?
+  voidedAt      DateTime?
+  voidedById    Int?
+  voidedBy      User?         @relation("TxVoidedBy", fields: [voidedById], references: [id])
+
+  createdById   Int
+  createdBy     User          @relation("TxCreatedBy", fields: [createdById], references: [id])
+
+  createdAt     DateTime      @default(now())
+  updatedAt     DateTime      @updatedAt
+
+  @@index([memberId, category, status])
+  @@index([paidAt])
+  @@index([createdById])
+  @@index([voidedById])
+}
+
+model MemberBalance {
+  memberId     Int      @id
+  wajibTotal   Decimal  @default(0)            // ← HAPUS @db.Decimal(18, 2)
+  pokokTotal   Decimal  @default(0)            // ← HAPUS @db.Decimal(18, 2)
+  updatedAt    DateTime @updatedAt
+
+  member       Member   @relation(fields: [memberId], references: [id], onDelete: Cascade)
+}

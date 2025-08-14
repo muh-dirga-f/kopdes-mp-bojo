@@ -1,0 +1,48 @@
+<ul class="navbar-nav bg-gradient-primary sidebar sidebar-dark accordion" id="accordionSidebar">
+  <a class="sidebar-brand d-flex align-items-center justify-content-center" href="/">
+    <div class="sidebar-brand-icon rotate-n-15"><i class="fas fa-coins"></i></div>
+    <div class="sidebar-brand-text mx-3">Koperasi</div>
+  </a>
+
+  <hr class="sidebar-divider my-0">
+
+  <li class="nav-item <%= (active==='dashboard') ? 'active' : '' %>">
+    <a class="nav-link" href="/"><i class="fas fa-fw fa-tachometer-alt"></i><span>Dashboard</span></a>
+  </li>
+
+  <hr class="sidebar-divider">
+
+  <div class="sidebar-heading">Master</div>
+  <% if (user?.roleName==='ADMIN' ) { %>
+    <li class="nav-item <%= (active==='users') ? 'active' : '' %>">
+      <a class="nav-link" href="/users"><i class="fas fa-user-shield"></i><span>Users</span></a>
+    </li>
+  <% } %>
+    <li class="nav-item <%= (active==='members') ? 'active' : '' %>">
+      <a class="nav-link" href="/members"><i class="fas fa-users"></i><span>Anggota</span></a>
+    </li>
+
+    <hr class="sidebar-divider">
+
+    <!-- === BARU: SIMPANAN === -->
+    <div class="sidebar-heading">Simpanan</div>
+    <li class="nav-item <%= (active==='savings-wajib') ? 'active' : '' %>">
+      <a class="nav-link" href="/savings/wajib"><i class="fas fa-piggy-bank"></i><span>Wajib</span></a>
+    </li>
+    <li class="nav-item <%= (active==='savings-pokok') ? 'active' : '' %>">
+      <a class="nav-link" href="/savings/pokok"><i class="fas fa-coins"></i><span>Pokok</span></a>
+    </li>
+    <hr class="sidebar-divider">
+
+    <!-- NEW: Transaksi -->
+    <div class="sidebar-heading">Transaksi</div>
+    <li class="nav-item <%= (active==='transactions') ? 'active' : '' %>">
+      <a class="nav-link" href="/transactions"><i class="fas fa-exchange-alt"></i><span>Daftar Transaksi</span></a>
+    </li>
+
+
+    <hr class="sidebar-divider d-none d-md-block">
+    <div class="text-center d-none d-md-inline">
+      <button class="rounded-circle border-0" id="sidebarToggle"></button>
+    </div>
+</ul>
