@@ -37,8 +37,8 @@ router.post('/members/:id/activate', requireAuth, requireRole('ADMIN'), membersA
 // Transactions
 router.get('/transactions', requireAuth, txPage);
 router.post('/transactions', requireAuth, requireRole('ADMIN', 'STAFF'), txCreate);
-router.post('/transactions/:code/void', requireAuth, requireRole('ADMIN'), txVoid);
-router.post('/transactions/refresh-cache', requireAuth, requireRole('ADMIN'), refreshMemberBalance);
+router.post('/transactions/:code/void', requireAuth, requireRole('ADMIN', 'STAFF'), txVoid);
+router.post('/transactions/refresh-cache', requireAuth, requireRole('ADMIN', 'STAFF'), refreshMemberBalance);
 
 // Savings
 router.get('/savings/wajib', requireAuth, requireRole('ADMIN', 'STAFF'), savingsWajibIndex);

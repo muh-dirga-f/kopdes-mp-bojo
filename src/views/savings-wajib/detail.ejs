@@ -80,7 +80,7 @@
                                             <% } %>
                                 </td>
                                 <td>
-                                    <% if (user?.roleName==='ADMIN' && t.status==='POSTED' ) { %>
+                                    <% if ((user?.roleName==='ADMIN' || user?.roleName==='STAFF') && t.status==='POSTED' ) { %>
                                         <button class="btn btn-sm btn-danger btn-void" data-toggle="modal"
                                             data-target="#modalVoid" data-code="<%= t.code %>">
                                             <i class="fas fa-ban"></i> Void

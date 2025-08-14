@@ -98,7 +98,7 @@ Jika menggunakan `prisma/seed.js`:
 | Role  | Akses                                                                 |
 | ----- | --------------------------------------------------------------------- |
 | ADMIN | Semua fitur (User, Anggota, Transaksi, Void, Refresh Saldo, dll.)     |
-| STAFF | Anggota, Transaksi (tanpa akses manajemen user & void simpanan pokok) |
+| STAFF | Anggota, Transaksi (tanpa akses manajemen user) |
 
 ---
 
